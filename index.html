@@ -102,7 +102,6 @@
     btn.disabled = true;
     const { error } = await sb.auth.signInWithOtp({
       email: email,
-      options: { emailRedirectTo: DASHBOARD_URL }
     });
     if (error) { btn.innerHTML = 'Magic Link senden'; btn.disabled = false; showError('Fehler: ' + error.message); return; }
     document.getElementById('sent-email').textContent = email;
