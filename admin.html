@@ -176,7 +176,7 @@
   </div>
   <div class="nav-right">
     <a href="dashboard.html">Kunden-Ansicht</a>
-    <a href="login.html">Login-Seite</a>
+    <a href="index.html">Login-Seite</a>
     <span class="nav-logout" onclick="logout()">Abmelden</span>
   </div>
 </nav>
@@ -406,7 +406,7 @@ function addCustomer(){
   showToast('✓ '+name+' wurde hinzugefügt!');
 }
 
-function logout(){sessionStorage.clear();window.location.href='login.html';}
+function logout(){sessionStorage.clear();window.location.href='index.html';}
 
 function showToast(msg){
   const t=document.getElementById('toast');
