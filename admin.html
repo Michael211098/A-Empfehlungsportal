@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Empfehlungsmanagement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#030039;--blue:#2200c8;--coral:#fc5b47;
+    --sky:#51bdff;--teal:#00bd9e;--white:#ffffff;
+    --lgray:#dcdcdc;--mgray:#a0a0b0;
+    --surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.09);
+    --border2:rgba(255,255,255,0.18);--radius:14px;--radius-sm:8px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:80px;}
+
+  nav{display:flex;align-items:center;justify-content:space-between;
+    padding:18px 48px;border-bottom:1px solid var(--border);
+    background:rgba(3,0,57,0.95);backdrop-filter:blur(14px);
+    position:sticky;top:0;z-index:50;}
+  .nav-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--sky);}
+  .nav-badge{background:rgba(252,91,71,0.18);border:1px solid rgba(252,91,71,0.3);
+    border-radius:99px;padding:3px 12px;font-size:11px;color:var(--coral);margin-left:10px;}
+  .nav-right{display:flex;align-items:center;gap:16px;}
+  .nav-right a{font-size:13px;color:var(--mgray);text-decoration:none;transition:color 0.2s;}
+  .nav-right a:hover{color:var(--white);}
+  .nav-logout{font-size:12px;color:var(--mgray);padding:5px 12px;border:1px solid var(--border2);
+    border-radius:99px;transition:all 0.2s;cursor:pointer;}
+  .nav-logout:hover{border-color:var(--coral);color:var(--coral);}
+
+  .page-head{max-width:1100px;margin:0 auto;padding:48px 48px 32px;animation:fadeUp 0.5s ease both;}
+  .page-eyebrow{font-size:11px;letter-spacing:0.14em;color:var(--coral);text-transform:uppercase;margin-bottom:10px;}
+  .page-head h1{font-family:'DM Serif Display',serif;font-size:38px;font-weight:400;
+    letter-spacing:-0.03em;margin-bottom:8px;}
+  .page-head h1 em{font-style:italic;color:var(--sky);}
+  .page-sub{font-size:14px;color:var(--mgray);line-height:1.6;}
+
+  .main{max-width:1100px;margin:0 auto;padding:0 48px;}
+
+  /* SUMMARY */
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;animation:fadeUp 0.5s 0.07s ease both;}
+  .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;}
+  .sum-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.38);margin-bottom:8px;}
+  .sum-val{font-family:'DM Serif Display',serif;font-size:34px;letter-spacing:-0.04em;line-height:1;margin-bottom:4px;}
+  .sum-val.c-sky{color:var(--sky);}
+  .sum-val.c-teal{color:var(--teal);}
+  .sum-val.c-coral{color:var(--coral);}
+  .sum-val.c-amber{color:#f09b50;}
+  .sum-hint{font-size:12px;color:rgba(255,255,255,0.35);}
+
+  /* TOOLBAR */
+  .toolbar{display:flex;align-items:center;gap:12px;margin-bottom:14px;
+    flex-wrap:wrap;animation:fadeUp 0.5s 0.13s ease both;}
+  .search-wrap{position:relative;flex:1;min-width:200px;}
+  .search-wrap input{width:100%;background:var(--surface);border:1px solid var(--border2);
+    border-radius:var(--radius-sm);padding:10px 14px 10px 36px;font-size:13px;
+    color:var(--white);font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+  .search-wrap input::placeholder{color:var(--mgray);}
+  .search-wrap input:focus{border-color:var(--sky);}
+  .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+    font-size:14px;pointer-events:none;}
+  select{background:var(--surface);border:1px solid var(--border2);
+    border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;
+    color:var(--white);font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;}
+  select option{background:var(--navy);}
+  .btn-add-cust{background:var(--coral);color:var(--white);border:none;
+    border-radius:var(--radius-sm);padding:10px 20px;font-size:13px;font-weight:700;
+    font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity 0.2s;white-space:nowrap;}
+  .btn-add-cust:hover{opacity:0.87;}
+
+  /* CUSTOMER TABLE */
+  .cust-table{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    overflow:hidden;margin-bottom:32px;animation:fadeUp 0.5s 0.17s ease both;}
+  .cust-row{display:grid;grid-template-columns:1fr 180px 110px 130px 110px 80px;
+    align-items:center;padding:0 22px;height:62px;border-bottom:1px solid var(--border);gap:12px;}
+  .cust-row:last-child{border-bottom:none;}
+  .cust-row.head{height:40px;background:rgba(34,0,200,0.3);}
+  .cust-row.head span{font-size:10px;letter-spacing:0.09em;text-transform:uppercase;color:rgba(255,255,255,0.38);}
+  .cust-person{display:flex;align-items:center;gap:10px;}
+  .cust-init{width:32px;height:32px;border-radius:50%;background:var(--blue);
+    border:1px solid rgba(81,189,255,0.3);display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;color:var(--sky);flex-shrink:0;}
+  .cust-name{font-size:13px;color:var(--white);}
+  .cust-email{font-size:11px;color:rgba(255,255,255,0.32);margin-top:1px;}
+  .cust-date{font-size:12px;color:var(--lgray);}
+  .cust-refs{font-size:14px;font-weight:500;}
+  .tier-pill{display:inline-flex;align-items:center;gap:5px;
+    padding:3px 10px;border-radius:99px;font-size:11px;}
+  .tier-0{background:rgba(255,255,255,0.06);color:var(--mgray);}
+  .tier-1{background:rgba(240,155,80,0.15);color:#f09b50;}
+  .tier-2{background:rgba(81,189,255,0.12);color:var(--sky);}
+  .tier-3{background:rgba(0,189,158,0.15);color:var(--teal);}
+  .tier-4,.tier-5{background:rgba(252,91,71,0.15);color:var(--coral);}
+  .action-btns{display:flex;gap:6px;}
+  .btn-sm{background:transparent;border:1px solid var(--border2);border-radius:var(--radius-sm);
+    padding:5px 11px;font-size:11px;color:var(--lgray);cursor:pointer;
+    font-family:'DM Sans',sans-serif;transition:all 0.2s;white-space:nowrap;}
+  .btn-sm:hover{border-color:var(--sky);color:var(--sky);}
+  .btn-sm.danger:hover{border-color:var(--coral);color:var(--coral);}
+
+  /* REWARD SETTINGS */
+  .settings-card{background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:28px 30px;margin-bottom:32px;
+    animation:fadeUp 0.5s 0.22s ease both;}
+  .settings-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;}
+  .settings-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;letter-spacing:-0.02em;}
+  .settings-sub{font-size:13px;color:var(--mgray);margin-top:3px;}
+  .btn-save{background:var(--teal);color:var(--navy);border:none;border-radius:var(--radius-sm);
+    padding:10px 20px;font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif;
+    cursor:pointer;transition:opacity 0.2s;}
+  .btn-save:hover{opacity:0.85;}
+  .tiers-edit{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;}
+  .tier-edit{background:rgba(255,255,255,0.03);border:1px solid var(--border2);
+    border-radius:var(--radius-sm);padding:16px;}
+  .tier-edit-icon{font-size:24px;margin-bottom:10px;line-height:1;}
+  .tier-edit label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+    color:rgba(255,255,255,0.4);display:block;margin-bottom:5px;}
+  .tier-edit input{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border2);
+    border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;color:var(--white);
+    font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;margin-bottom:8px;}
+  .tier-edit input:focus{border-color:var(--sky);}
+
+  /* ADD CUSTOMER MODAL */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(3,0,57,0.87);
+    backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center;}
+  .modal-bg.open{display:flex;}
+  .modal{background:#0d0b3a;border:1px solid var(--border2);border-radius:var(--radius);
+    padding:36px 32px;width:100%;max-width:460px;animation:fadeUp 0.3s ease both;}
+  .modal h2{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;
+    letter-spacing:-0.02em;margin-bottom:20px;}
+  .form-group{margin-bottom:14px;}
+  .form-group label{display:block;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+    color:rgba(255,255,255,0.4);margin-bottom:6px;}
+  .form-group input,.form-group select{width:100%;background:rgba(255,255,255,0.05);
+    border:1px solid var(--border2);border-radius:var(--radius-sm);padding:11px 14px;
+    font-size:13px;color:var(--white);font-family:'DM Sans',sans-serif;outline:none;
+    transition:border-color 0.2s;}
+  .form-group input:focus,.form-group select:focus{border-color:var(--sky);}
+  .form-group input::placeholder{color:var(--mgray);}
+  .modal-actions{display:flex;gap:10px;margin-top:20px;}
+  .btn-modal-primary{flex:1;background:var(--coral);color:var(--white);border:none;
+    border-radius:var(--radius-sm);padding:12px;font-size:13px;font-weight:700;
+    font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity 0.2s;}
+  .btn-modal-primary:hover{opacity:0.87;}
+  .btn-modal-cancel{flex:1;background:transparent;color:var(--mgray);border:1px solid var(--border2);
+    border-radius:var(--radius-sm);padding:11px;font-size:13px;font-family:'DM Sans',sans-serif;
+    cursor:pointer;transition:all 0.2s;}
+  .btn-modal-cancel:hover{border-color:var(--border2);color:var(--white);}
+
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0 24px;}
+  .section-title{font-size:11px;letter-spacing:0.13em;text-transform:uppercase;
+    color:rgba(255,255,255,0.38);margin-bottom:12px;}
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);
+    background:var(--blue);border:1px solid var(--sky);border-radius:99px;
+    padding:10px 22px;font-size:13px;color:var(--white);
+    opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;z-index:999;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+  @media(max-width:900px){
+    nav{padding:16px 20px;} .page-head,.main{padding-left:20px;padding-right:20px;}
+    .summary{grid-template-columns:1fr 1fr;}
+    .cust-row{grid-template-columns:1fr 80px 90px;} 
+    .cust-row>*:nth-child(2),.cust-row>*:nth-child(5){display:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex;align-items:center;">
+    <div class="nav-logo">Aventus</div>
+    <span class="nav-badge">Admin</span>
+  </div>
+  <div class="nav-right">
+    <a href="dashboard.html">Kunden-Ansicht</a>
+    <a href="login.html">Login-Seite</a>
+    <span class="nav-logout" onclick="logout()">Abmelden</span>
+  </div>
+</nav>
+
+<div class="page-head">
+  <div class="page-eyebrow">Admin-Panel · Vollzugriff</div>
+  <h1>Empfehlungs-<em>verwaltung</em></h1>
+  <p class="page-sub">Verwalte alle Kunden, Empfehlungen und Prämien-Stufen an einem Ort.</p>
+</div>
+
+<div class="main">
+
+  <!-- SUMMARY STATS -->
+  <div class="summary">
+    <div class="sum-card">
+      <div class="sum-label">Kunden gesamt</div>
+      <div class="sum-val c-sky" id="s-customers">5</div>
+      <div class="sum-hint">registrierte Nutzer</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Empfehlungen gesamt</div>
+      <div class="sum-val c-teal" id="s-refs">8</div>
+      <div class="sum-hint">aktive Empfehlungen</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Prämien ausgegeben</div>
+      <div class="sum-val c-amber" id="s-rewards">6</div>
+      <div class="sum-hint">eingelöste Prämien</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Conversion Rate</div>
+      <div class="sum-val c-coral" id="s-conv">73%</div>
+      <div class="sum-hint">Empfehlung → Kunde</div>
+    </div>
+  </div>
+
+  <!-- CUSTOMERS -->
+  <div class="section-title">Kunden-Übersicht</div>
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Kunde suchen…" oninput="filterCustomers()">
+    </div>
+    <select id="filter-tier" onchange="filterCustomers()">
+      <option value="">Alle Stufen</option>
+      <option value="0">Keine Prämie</option>
+      <option value="1">Stufe 1 – Kino</option>
+      <option value="2">Stufe 2 – AirPods</option>
+      <option value="3">Stufe 3 – iPad</option>
+      <option value="4">Stufe 4 – Trip</option>
+      <option value="5">Stufe 5 – Urlaub</option>
+    </select>
+    <button class="btn-add-cust" onclick="openAddCustomer()">+ Kunde hinzufügen</button>
+  </div>
+
+  <div class="cust-table" id="cust-table">
+    <div class="cust-row head">
+      <span>Kunde</span><span>Mitglied seit</span><span>Empfehlungen</span>
+      <span>Prämien-Stufe</span><span>Letzter Kontakt</span><span>Aktionen</span>
+    </div>
+    <div id="cust-body"></div>
+  </div>
+
+  <!-- REWARD SETTINGS -->
+  <div class="settings-card">
+    <div class="settings-head">
+      <div>
+        <div class="settings-title">Prämien-Stufen konfigurieren</div>
+        <div class="settings-sub">Ändere Prämien, Stufen und Zielwerte direkt hier.</div>
+      </div>
+      <button class="btn-save" onclick="saveSettings()">Änderungen speichern</button>
+    </div>
+    <div class="tiers-edit" id="tiers-edit"></div>
+  </div>
+
+</div>
+
+<!-- ADD CUSTOMER MODAL -->
+<div class="modal-bg" id="add-modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h2>Neuen Kunden anlegen</h2>
+    <div class="form-group"><label>Vollständiger Name</label><input type="text" id="f-name" placeholder="Max Mustermann"></div>
+    <div class="form-group"><label>E-Mail-Adresse</label><input type="email" id="f-email" placeholder="max@mail.de"></div>
+    <div class="form-group"><label>Unternehmen (optional)</label><input type="text" id="f-company" placeholder="Firma GmbH"></div>
+    <div class="form-group">
+      <label>Anzahl Empfehlungen (Startwert)</label>
+      <input type="number" id="f-refs" value="0" min="0" max="20">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-primary" onclick="addCustomer()">Kunde anlegen</button>
+      <button class="btn-modal-cancel" onclick="closeAddCustomer()">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TIERS=[
+  {count:1,icon:'🎬',label:'2 Kinogutscheine'},
+  {count:2,icon:'🎧',label:'AirPods'},
+  {count:3,icon:'📱',label:'iPad'},
+  {count:5,icon:'✈️',label:'Wochenend-Trip'},
+  {count:8,icon:'🏆',label:'Jahresurlaub'},
+];
+
+let customers=[
+  {id:1,name:'Michael Kleinhappel',email:'michael.kleinhappel@digidor.de',company:'Digidor',since:'Jan 2024',refs:2,lastContact:'15. Apr 2025'},
+  {id:2,name:'Sandra Berger',email:'s.berger@mail.de',company:'',since:'Mär 2024',refs:3,lastContact:'10. Apr 2025'},
+  {id:3,name:'Thomas Winkler',email:'t.winkler@mail.de',company:'Winkler AG',since:'Jun 2024',refs:1,lastContact:'8. Apr 2025'},
+  {id:4,name:'Julia Hofmann',email:'j.hofmann@mail.de',company:'',since:'Aug 2024',refs:5,lastContact:'12. Apr 2025'},
+  {id:5,name:'Klaus Mayer',email:'k.mayer@gmx.de',company:'Mayer Consulting',since:'Nov 2024',refs:0,lastContact:'1. Apr 2025'},
+];
+let editableTiers=JSON.parse(JSON.stringify(TIERS));
+let nextId=6;
+let toastTimer;
+
+function getTierLevel(refs){
+  let lvl=0;
+  TIERS.forEach((t,i)=>{if(refs>=t.count)lvl=i+1;});
+  return lvl;
+}
+function getTierLabel(refs){
+  const lvl=getTierLevel(refs);
+  if(lvl===0)return{label:'Keine Prämie',cls:'tier-0'};
+  const t=TIERS[lvl-1];
+  return{label:t.icon+' '+t.label,cls:'tier-'+lvl};
+}
+function getInitials(name){
+  const p=name.trim().split(' ');
+  return(p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();
+}
+
+function getFilteredCustomers(){
+  const q=document.getElementById('search-input').value.toLowerCase();
+  const tier=document.getElementById('filter-tier').value;
+  return customers.filter(c=>{
+    const matchQ=!q||c.name.toLowerCase().includes(q)||c.email.toLowerCase().includes(q);
+    const matchT=!tier||getTierLevel(c.refs)===parseInt(tier);
+    return matchQ&&matchT;
+  });
+}
+
+function renderCustomers(){
+  const list=getFilteredCustomers();
+  const body=document.getElementById('cust-body');
+  if(list.length===0){body.innerHTML='<div style="padding:28px;text-align:center;font-size:14px;color:var(--mgray);">Keine Kunden gefunden.</div>';return;}
+  body.innerHTML=list.map(c=>{
+    const tl=getTierLabel(c.refs);
+    return`<div class="cust-row">
+      <div class="cust-person">
+        <div class="cust-init">${getInitials(c.name)}</div>
+        <div><div class="cust-name">${c.name}</div><div class="cust-email">${c.email}</div></div>
+      </div>
+      <div class="cust-date">${c.since}</div>
+      <div class="cust-refs" style="color:var(--sky)">${c.refs}</div>
+      <div><span class="tier-pill ${tl.cls}">${tl.label}</span></div>
+      <div class="cust-date">${c.lastContact}</div>
+      <div class="action-btns">
+        <button class="btn-sm" onclick="addRef(${c.id})">+Ref</button>
+        <button class="btn-sm danger" onclick="removeCustomer(${c.id})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+  updateSummary();
+}
+
+function filterCustomers(){renderCustomers();}
+
+function addRef(id){
+  const c=customers.find(x=>x.id===id);
+  if(!c)return;
+  c.refs++;
+  c.lastContact=new Date().toLocaleDateString('de-DE',{day:'numeric',month:'short',year:'numeric'});
+  renderCustomers();
+  showToast('✓ Empfehlung für '+c.name.split(' ')[0]+' hinzugefügt. Jetzt: '+c.refs+' Empfehlung(en).');
+}
+
+function removeCustomer(id){
+  customers=customers.filter(c=>c.id!==id);
+  renderCustomers();
+  showToast('Kunde wurde entfernt.');
+}
+
+function updateSummary(){
+  const totalRefs=customers.reduce((s,c)=>s+c.refs,0);
+  const totalRewards=customers.reduce((s,c)=>s+getTierLevel(c.refs),0);
+  document.getElementById('s-customers').textContent=customers.length;
+  document.getElementById('s-refs').textContent=totalRefs;
+  document.getElementById('s-rewards').textContent=totalRewards;
+}
+
+function renderTiersEdit(){
+  document.getElementById('tiers-edit').innerHTML=editableTiers.map((t,i)=>`
+    <div class="tier-edit">
+      <div class="tier-edit-icon">${t.icon}</div>
+      <label>Anzahl Empfehlungen</label>
+      <input type="number" value="${t.count}" min="1" onchange="editableTiers[${i}].count=parseInt(this.value)">
+      <label>Prämien-Bezeichnung</label>
+      <input type="text" value="${t.label}" onchange="editableTiers[${i}].label=this.value">
+    </div>`).join('');
+}
+
+function saveSettings(){
+  TIERS.forEach((t,i)=>{t.count=editableTiers[i].count;t.label=editableTiers[i].label;});
+  renderCustomers();
+  showToast('✓ Einstellungen gespeichert!');
+}
+
+function openAddCustomer(){document.getElementById('add-modal').classList.add('open');}
+function closeAddCustomer(){document.getElementById('add-modal').classList.remove('open');}
+function closeModalOutside(e){if(e.target===document.getElementById('add-modal'))closeAddCustomer();}
+
+function addCustomer(){
+  const name=document.getElementById('f-name').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const company=document.getElementById('f-company').value.trim();
+  const refs=parseInt(document.getElementById('f-refs').value)||0;
+  if(!name||!email){showToast('Bitte Name und E-Mail angeben.');return;}
+  customers.push({id:nextId++,name,email,company,since:'Apr 2025',refs,lastContact:'Heute'});
+  closeAddCustomer();
+  document.getElementById('f-name').value='';
+  document.getElementById('f-email').value='';
+  document.getElementById('f-company').value='';
+  document.getElementById('f-refs').value='0';
+  renderCustomers();
+  showToast('✓ '+name+' wurde hinzugefügt!');
+}
+
+function logout(){sessionStorage.clear();window.location.href='login.html';}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+renderCustomers();
+renderTiersEdit();
+</script>
+</body>
+</html>

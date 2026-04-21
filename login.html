@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aventus – Empfehlungsportal Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#030039; --blue:#2200c8; --coral:#fc5b47;
+    --sky:#51bdff; --teal:#00bd9e; --white:#ffffff;
+    --lgray:#dcdcdc; --mgray:#a0a0b0;
+    --border:rgba(255,255,255,0.10); --border2:rgba(255,255,255,0.18);
+    --radius:14px; --radius-sm:8px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;
+    min-height:100vh;display:flex;flex-direction:column;}
+
+  /* DEMO CUSTOMERS (top bar) */
+  .demo-bar{background:rgba(252,91,71,0.12);border-bottom:1px solid rgba(252,91,71,0.25);
+    padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .demo-bar-label{font-size:11px;color:var(--coral);letter-spacing:0.1em;text-transform:uppercase;}
+  .demo-pill{background:rgba(255,255,255,0.07);border:1px solid var(--border2);border-radius:99px;
+    padding:5px 14px;font-size:12px;color:var(--lgray);cursor:pointer;transition:all 0.2s;}
+  .demo-pill:hover{background:var(--blue);border-color:var(--sky);color:var(--sky);}
+
+  nav{display:flex;align-items:center;justify-content:space-between;
+    padding:20px 48px;border-bottom:1px solid var(--border);}
+  .nav-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--sky);}
+  .nav-hint{font-size:13px;color:var(--mgray);}
+
+  .page{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+  .card{background:rgba(255,255,255,0.04);border:1px solid var(--border);
+    border-radius:var(--radius);padding:48px 44px;width:100%;max-width:420px;
+    position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--blue),var(--sky),var(--teal));}
+
+  .card-eyebrow{font-size:11px;letter-spacing:0.14em;color:var(--sky);
+    text-transform:uppercase;margin-bottom:12px;}
+  .card h1{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;
+    letter-spacing:-0.03em;line-height:1.15;margin-bottom:10px;}
+  .card h1 em{font-style:italic;color:var(--sky);}
+  .card-sub{font-size:14px;color:var(--mgray);line-height:1.6;margin-bottom:32px;}
+
+  label{display:block;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+    color:rgba(255,255,255,0.45);margin-bottom:8px;}
+  input[type=email]{width:100%;background:rgba(255,255,255,0.05);
+    border:1px solid var(--border2);border-radius:var(--radius-sm);
+    padding:13px 16px;font-size:14px;color:var(--white);
+    font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;margin-bottom:16px;}
+  input[type=email]::placeholder{color:var(--mgray);}
+  input[type=email]:focus{border-color:var(--sky);}
+
+  .btn{width:100%;background:var(--coral);color:var(--white);border:none;
+    border-radius:var(--radius-sm);padding:14px;font-size:14px;font-weight:700;
+    font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity 0.2s,transform 0.1s;}
+  .btn:hover{opacity:0.88;}
+  .btn:active{transform:scale(0.98);}
+  .btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+  .divider{border:none;border-top:1px solid var(--border);margin:24px 0;}
+  .hint{font-size:12px;color:var(--mgray);text-align:center;line-height:1.6;}
+  .hint a{color:var(--sky);text-decoration:none;}
+
+  /* SUCCESS STATE */
+  .success{display:none;text-align:center;}
+  .success-icon{font-size:48px;margin-bottom:16px;line-height:1;}
+  .success h2{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;
+    margin-bottom:10px;letter-spacing:-0.02em;}
+  .success p{font-size:14px;color:var(--mgray);line-height:1.65;margin-bottom:24px;}
+  .success-email{color:var(--sky);font-weight:500;}
+
+  .btn-outline{width:100%;background:transparent;color:var(--sky);
+    border:1px solid rgba(81,189,255,0.35);border-radius:var(--radius-sm);
+    padding:13px;font-size:13px;font-family:'DM Sans',sans-serif;
+    cursor:pointer;transition:all 0.2s;margin-bottom:10px;}
+  .btn-outline:hover{border-color:var(--sky);background:rgba(81,189,255,0.07);}
+
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);
+    border-top-color:var(--white);border-radius:50%;animation:spin 0.7s linear infinite;
+    vertical-align:middle;margin-right:8px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card{animation:fadeUp 0.5s ease both;}
+
+  footer{padding:20px 48px;border-top:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  footer span{font-size:12px;color:var(--mgray);}
+</style>
+</head>
+<body>
+
+<!-- DEMO BAR -->
+<div class="demo-bar">
+  <span class="demo-bar-label">🎯 Demo – Kunden auswählen:</span>
+  <span class="demo-pill" onclick="fillDemo('michael.kleinhappel@digidor.de','Michael Kleinhappel')">Michael Kleinhappel</span>
+  <span class="demo-pill" onclick="fillDemo('sandra.berger@mail.de','Sandra Berger')">Sandra Berger</span>
+  <span class="demo-pill" onclick="fillDemo('admin@digidor.de','Admin')">Admin-Ansicht</span>
+</div>
+
+<nav>
+  <div class="nav-logo">Aventus</div>
+  <div class="nav-hint">Empfehlungsportal</div>
+</nav>
+
+<div class="page">
+  <div class="card">
+
+    <!-- LOGIN FORM -->
+    <div id="form-view">
+      <div class="card-eyebrow">Empfehlungsportal</div>
+      <h1>Willkommen bei<br><em>Aventus.</em></h1>
+      <p class="card-sub">Gib deine E-Mail-Adresse ein — wir senden dir einen sicheren Login-Link. Kein Passwort nötig.</p>
+
+      <label for="email">E-Mail-Adresse</label>
+      <input type="email" id="email" placeholder="deine@email.de" autocomplete="email">
+      <button class="btn" id="submit-btn" onclick="sendMagicLink()">Magic Link senden</button>
+
+      <hr class="divider">
+      <p class="hint">Noch kein Konto? <a href="#">Kontaktiere uns</a> — wir richten dich ein.</p>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="success" id="success-view">
+      <div class="success-icon">📬</div>
+      <h2>Link wurde gesendet!</h2>
+      <p>Wir haben einen Login-Link an<br><span class="success-email" id="sent-email"></span><br>gesendet. Bitte prüfe dein Postfach.</p>
+      <button class="btn-outline" id="demo-redirect-btn" onclick="redirectToDashboard()">
+        Demo: Direkt zum Dashboard →
+      </button>
+      <button class="btn-outline" onclick="resetForm()">Andere E-Mail verwenden</button>
+      <hr class="divider">
+      <p class="hint">Kein E-Mail erhalten? Prüfe deinen Spam-Ordner oder <a href="#" onclick="resetForm()">versuche es erneut</a>.</p>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <span>© 2025 Aventus · Empfehlungsportal</span>
+  <span>Powered by Digidor</span>
+</footer>
+
+<script>
+  const DEMO_USERS = {
+    'michael.kleinhappel@digidor.de': { name:'Michael Kleinhappel', role:'customer', refs:2 },
+    'sandra.berger@mail.de':          { name:'Sandra Berger',       role:'customer', refs:0 },
+    'admin@digidor.de':               { name:'Admin',               role:'admin',    refs:0 },
+  };
+
+  function fillDemo(email, name) {
+    document.getElementById('email').value = email;
+    document.getElementById('email').focus();
+  }
+
+  function sendMagicLink() {
+    const email = document.getElementById('email').value.trim();
+    if (!email || !email.includes('@')) {
+      document.getElementById('email').style.borderColor = 'var(--coral)';
+      return;
+    }
+    document.getElementById('email').style.borderColor = '';
+    const btn = document.getElementById('submit-btn');
+    btn.innerHTML = '<span class="spinner"></span>Link wird gesendet…';
+    btn.disabled = true;
+
+    setTimeout(() => {
+      document.getElementById('sent-email').textContent = email;
+      sessionStorage.setItem('aventus_email', email);
+      const user = DEMO_USERS[email];
+      if (user) sessionStorage.setItem('aventus_user', JSON.stringify(user));
+      document.getElementById('form-view').style.display = 'none';
+      document.getElementById('success-view').style.display = 'block';
+    }, 1400);
+  }
+
+  function redirectToDashboard() {
+    const email = sessionStorage.getItem('aventus_email');
+    const user = DEMO_USERS[email];
+    if (user && user.role === 'admin') {
+      window.location.href = 'admin.html';
+    } else {
+      window.location.href = 'dashboard.html';
+    }
+  }
+
+  function resetForm() {
+    document.getElementById('form-view').style.display = 'block';
+    document.getElementById('success-view').style.display = 'none';
+    const btn = document.getElementById('submit-btn');
+    btn.innerHTML = 'Magic Link senden';
+    btn.disabled = false;
+    document.getElementById('email').value = '';
+  }
+
+  document.getElementById('email').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendMagicLink();
+  });
+</script>
+</body>
+</html>

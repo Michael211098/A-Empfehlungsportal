@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meine Empfehlungen – Aventus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#030039;--blue:#2200c8;--coral:#fc5b47;
+    --sky:#51bdff;--teal:#00bd9e;--white:#ffffff;
+    --lgray:#dcdcdc;--mgray:#a0a0b0;
+    --surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.09);
+    --border2:rgba(255,255,255,0.17);--radius:14px;--radius-sm:8px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:80px;}
+
+  nav{display:flex;align-items:center;justify-content:space-between;
+    padding:18px 48px;border-bottom:1px solid var(--border);
+    background:rgba(3,0,57,0.95);backdrop-filter:blur(14px);
+    position:sticky;top:0;z-index:50;}
+  .nav-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--sky);}
+  .nav-right{display:flex;align-items:center;gap:24px;}
+  .nav-links{display:flex;gap:28px;}
+  .nav-links a{font-size:13px;color:var(--mgray);text-decoration:none;transition:color 0.2s;}
+  .nav-links a:hover{color:var(--white);}
+  .nav-links a.active{color:var(--sky);}
+  .nav-user{display:flex;align-items:center;gap:10px;}
+  .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--blue);
+    border:1.5px solid var(--sky);display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;color:var(--sky);}
+  .nav-name{font-size:13px;color:var(--lgray);}
+  .nav-logout{font-size:12px;color:var(--mgray);text-decoration:none;
+    padding:5px 12px;border:1px solid var(--border2);border-radius:99px;transition:all 0.2s;cursor:pointer;}
+  .nav-logout:hover{border-color:var(--coral);color:var(--coral);}
+
+  .hero{max-width:960px;margin:0 auto;padding:52px 48px 36px;animation:fadeUp 0.5s ease both;}
+  .hero-eyebrow{font-size:11px;letter-spacing:0.14em;color:var(--sky);text-transform:uppercase;margin-bottom:10px;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:40px;font-weight:400;
+    line-height:1.12;letter-spacing:-0.03em;margin-bottom:10px;}
+  .hero h1 em{font-style:italic;color:var(--sky);}
+  .hero-sub{font-size:15px;color:var(--mgray);line-height:1.65;max-width:520px;}
+  .hero-sub strong{color:var(--coral);font-weight:500;}
+
+  .main{max-width:960px;margin:0 auto;padding:0 48px;}
+
+  /* METRICS */
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;animation:fadeUp 0.5s 0.08s ease both;}
+  .metric{background:var(--blue);border-radius:var(--radius);padding:22px 24px;position:relative;overflow:hidden;}
+  .metric::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;}
+  .metric:nth-child(1)::after{background:var(--sky);}
+  .metric:nth-child(2)::after{background:var(--teal);}
+  .metric:nth-child(3)::after{background:var(--coral);}
+  .metric-label{font-size:11px;letter-spacing:0.1em;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:10px;}
+  .metric-val{font-family:'DM Serif Display',serif;font-size:38px;letter-spacing:-0.04em;line-height:1;margin-bottom:5px;}
+  .metric:nth-child(1) .metric-val{color:var(--sky);}
+  .metric:nth-child(2) .metric-val{color:var(--teal);}
+  .metric:nth-child(3) .metric-val{color:var(--coral);}
+  .metric-hint{font-size:12px;color:rgba(255,255,255,0.4);}
+
+  /* PROGRESS */
+  .progress-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:28px 30px;margin-bottom:28px;animation:fadeUp 0.5s 0.13s ease both;position:relative;overflow:hidden;}
+  .progress-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--blue),var(--sky),var(--teal));}
+  .progress-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;}
+  .progress-label{font-size:11px;letter-spacing:0.1em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:7px;}
+  .progress-title{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-0.02em;}
+  .progress-title em{font-style:italic;color:var(--coral);}
+  .progress-badge{background:rgba(252,91,71,0.15);border:1px solid rgba(252,91,71,0.3);
+    border-radius:99px;padding:5px 15px;font-size:12px;color:var(--coral);white-space:nowrap;}
+  .progress-track{background:rgba(255,255,255,0.08);border-radius:99px;height:7px;overflow:hidden;margin-bottom:10px;}
+  .progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--sky));
+    transition:width 1s cubic-bezier(.4,0,.2,1);}
+  .progress-feet{display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.38);}
+
+  /* TIERS */
+  .tiers-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:28px;animation:fadeUp 0.5s 0.18s ease both;}
+  .tier{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px 10px 15px;text-align:center;position:relative;transition:all 0.2s;}
+  .tier.done{background:rgba(0,189,158,0.1);border-color:rgba(0,189,158,0.35);}
+  .tier.next-up{border:1.5px solid var(--coral);background:rgba(252,91,71,0.07);}
+  .tier-num{position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+    background:var(--navy);border:1px solid var(--border2);border-radius:99px;
+    padding:2px 9px;font-size:10px;color:var(--mgray);white-space:nowrap;}
+  .tier.done .tier-num{color:var(--teal);border-color:rgba(0,189,158,0.4);}
+  .tier.next-up .tier-num{color:var(--coral);border-color:rgba(252,91,71,0.5);}
+  .tier-icon{font-size:24px;margin:5px 0 8px;line-height:1;}
+  .tier-name{font-size:11px;color:var(--mgray);line-height:1.4;}
+  .tier.done .tier-name{color:var(--teal);}
+  .tier.next-up .tier-name{color:var(--coral);}
+  .tier-check{position:absolute;top:8px;right:8px;width:15px;height:15px;border-radius:50%;
+    background:var(--teal);display:flex;align-items:center;justify-content:center;}
+  .tier-check svg{width:8px;height:8px;}
+
+  /* SECTION */
+  .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .section-title{font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.38);}
+  .section-action{font-size:12px;color:var(--sky);cursor:pointer;background:none;border:none;
+    font-family:'DM Sans',sans-serif;transition:color 0.2s;}
+  .section-action:hover{color:var(--white);}
+
+  /* REFS TABLE */
+  .ref-table{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    overflow:hidden;margin-bottom:28px;animation:fadeUp 0.5s 0.23s ease both;}
+  .ref-row{display:grid;grid-template-columns:1fr 140px 120px 110px;
+    align-items:center;padding:0 22px;height:58px;border-bottom:1px solid var(--border);gap:16px;}
+  .ref-row:last-child{border-bottom:none;}
+  .ref-row.head{height:40px;background:rgba(34,0,200,0.3);}
+  .ref-row.head span{font-size:10px;letter-spacing:0.09em;text-transform:uppercase;color:rgba(255,255,255,0.38);}
+  .ref-empty{padding:36px;text-align:center;font-size:14px;color:var(--mgray);}
+  .ref-person{display:flex;align-items:center;gap:10px;}
+  .ref-init{width:30px;height:30px;border-radius:50%;background:var(--blue);
+    border:1px solid rgba(81,189,255,0.3);display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:700;color:var(--sky);flex-shrink:0;}
+  .ref-fullname{font-size:13px;color:var(--white);}
+  .ref-email-text{font-size:11px;color:rgba(255,255,255,0.32);margin-top:1px;}
+  .ref-date{font-size:12px;color:var(--lgray);}
+  .ref-source{font-size:11px;color:rgba(255,255,255,0.35);}
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:500;}
+  .badge-teal{background:rgba(0,189,158,0.15);color:var(--teal);}
+  .badge-amber{background:rgba(252,91,71,0.12);color:#f09b50;}
+  .badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+
+  /* LINK CARD */
+  .link-section{animation:fadeUp 0.5s 0.28s ease both;}
+  .link-card{background:var(--blue);border-radius:var(--radius);padding:26px 30px;
+    display:flex;align-items:center;gap:20px;flex-wrap:wrap;position:relative;overflow:hidden;}
+  .link-card::after{content:'';position:absolute;top:0;right:0;width:220px;height:220px;
+    background:radial-gradient(circle at top right,rgba(81,189,255,0.13),transparent 65%);pointer-events:none;}
+  .link-icon{width:46px;height:46px;border-radius:var(--radius-sm);
+    background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);
+    display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;}
+  .link-info{flex:1;min-width:180px;}
+  .link-info h3{font-size:15px;font-weight:500;margin-bottom:6px;}
+  .link-url{font-size:12px;color:var(--sky);font-family:monospace;
+    background:rgba(0,0,0,0.22);padding:5px 11px;border-radius:var(--radius-sm);
+    display:inline-block;border:1px solid rgba(81,189,255,0.2);}
+  .btn-primary{background:var(--coral);color:var(--white);border:none;border-radius:var(--radius-sm);
+    padding:12px 22px;font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif;
+    cursor:pointer;transition:opacity 0.2s,transform 0.1s;white-space:nowrap;}
+  .btn-primary:hover{opacity:0.87;}
+  .btn-primary:active{transform:scale(0.97);}
+  .btn-outline2{background:transparent;color:var(--sky);border:1px solid rgba(81,189,255,0.32);
+    border-radius:var(--radius-sm);padding:11px 20px;font-size:13px;font-family:'DM Sans',sans-serif;
+    cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .btn-outline2:hover{border-color:var(--sky);color:var(--white);}
+
+  /* SHARE MODAL */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(3,0,57,0.85);
+    backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center;}
+  .modal-bg.open{display:flex;}
+  .modal{background:#0d0b3a;border:1px solid var(--border2);border-radius:var(--radius);
+    padding:36px 32px;width:100%;max-width:400px;animation:fadeUp 0.3s ease both;}
+  .modal h2{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;
+    letter-spacing:-0.02em;margin-bottom:8px;}
+  .modal p{font-size:13px;color:var(--mgray);margin-bottom:24px;line-height:1.6;}
+  .share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+  .share-btn{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);
+    padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+  .share-btn:hover{border-color:var(--sky);background:rgba(81,189,255,0.06);}
+  .share-btn .s-icon{font-size:22px;margin-bottom:6px;line-height:1;}
+  .share-btn .s-label{font-size:12px;color:var(--lgray);}
+  .modal-close{width:100%;background:transparent;color:var(--mgray);
+    border:1px solid var(--border);border-radius:var(--radius-sm);
+    padding:11px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;}
+  .modal-close:hover{border-color:var(--border2);color:var(--white);}
+
+  .divider{border:none;border-top:1px solid var(--border);margin:28px 0;}
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);
+    background:var(--blue);border:1px solid var(--sky);border-radius:99px;
+    padding:10px 22px;font-size:13px;color:var(--white);
+    opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;z-index:999;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+  @media(max-width:680px){
+    nav{padding:16px 20px;} .hero{padding:36px 20px 28px;} .hero h1{font-size:28px;}
+    .main{padding:0 20px;} .metrics{grid-template-columns:1fr 1fr;}
+    .tiers-grid{grid-template-columns:repeat(3,1fr);}
+    .ref-row{grid-template-columns:1fr 90px;}
+    .ref-row>*:nth-child(3),.ref-row>*:nth-child(4){display:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Aventus</div>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="#" class="active">Empfehlungen</a>
+      <a href="#">Prämien</a>
+      <a href="#">Hilfe</a>
+    </div>
+    <div class="nav-user">
+      <div class="nav-avatar" id="nav-av">MK</div>
+      <span class="nav-name" id="nav-name">Michael Kleinhappel</span>
+      <span class="nav-logout" onclick="logout()">Abmelden</span>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Empfehlungsprogramm · Dein persönlicher Bereich</div>
+  <h1>Guten Tag,<br><em id="hero-name">Michael.</em></h1>
+  <p class="hero-sub" id="hero-sub">Du hast bereits 2 Empfehlungen abgegeben. <strong>Noch eine Empfehlung</strong> und du erhältst ein iPad — du bist fast am Ziel!</p>
+</div>
+
+<div class="main">
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">Empfehlungen gesamt</div>
+      <div class="metric-val" id="v-total">2</div>
+      <div class="metric-hint">Kunden erfolgreich gewonnen</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Prämien erhalten</div>
+      <div class="metric-val" id="v-rewards">2</div>
+      <div class="metric-hint" id="v-rewards-hint">Kinogutscheine &amp; AirPods</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Noch bis zur Prämie</div>
+      <div class="metric-val" id="v-next">1</div>
+      <div class="metric-hint" id="v-next-hint">Empfehlung fehlt noch</div>
+    </div>
+  </div>
+
+  <div class="progress-card">
+    <div class="progress-top">
+      <div>
+        <div class="progress-label">Fortschritt zur nächsten Prämie</div>
+        <div class="progress-title" id="prog-title">Noch eine Empfehlung bis zum <em>iPad</em> 📱</div>
+      </div>
+      <div class="progress-badge" id="prog-badge">2 / 3 Empfehlungen</div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:66%"></div></div>
+    <div class="progress-feet">
+      <span id="prog-left">2 von 3 erreicht</span>
+      <span id="prog-right">iPad bei 3 Empfehlungen</span>
+    </div>
+  </div>
+
+  <div class="section-head" style="animation:fadeUp 0.5s 0.16s ease both;">
+    <div class="section-title">Prämien-Stufen</div>
+  </div>
+  <div class="tiers-grid" id="tiers-grid"></div>
+
+  <hr class="divider">
+
+  <div class="section-head" style="animation:fadeUp 0.5s 0.22s ease both;">
+    <div class="section-title">Meine Empfehlungen</div>
+    <button class="section-action" onclick="addDemoRef()">+ Demo: Empfehlung hinzufügen</button>
+  </div>
+  <div class="ref-table" id="ref-table">
+    <div class="ref-row head">
+      <span>Person</span><span>Datum</span><span>Kanal</span><span>Status</span>
+    </div>
+    <div id="ref-body"></div>
+  </div>
+
+  <div class="link-section">
+    <div class="section-head" style="margin-bottom:12px;">
+      <div class="section-title">Mein persönlicher Empfehlungslink</div>
+    </div>
+    <div class="link-card">
+      <div class="link-icon">🔗</div>
+      <div class="link-info">
+        <h3>Teile deinen Link und erhalte Prämien</h3>
+        <div class="link-url" id="ref-link-display">https://aventus.de/empfehlung/MK28491</div>
+      </div>
+      <button class="btn-primary" onclick="copyLink()">Link kopieren</button>
+      <button class="btn-outline2" onclick="openShare()">Teilen</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-bg" id="share-modal" onclick="closeShareOutside(event)">
+  <div class="modal">
+    <h2>Link teilen</h2>
+    <p>Wähle, wie du deinen Empfehlungslink mit Freunden und Bekannten teilen möchtest.</p>
+    <div class="share-grid">
+      <div class="share-btn" onclick="shareVia('whatsapp')"><div class="s-icon">💬</div><div class="s-label">WhatsApp</div></div>
+      <div class="share-btn" onclick="shareVia('email')"><div class="s-icon">📧</div><div class="s-label">E-Mail</div></div>
+      <div class="share-btn" onclick="shareVia('linkedin')"><div class="s-icon">💼</div><div class="s-label">LinkedIn</div></div>
+      <div class="share-btn" onclick="copyLink()"><div class="s-icon">📋</div><div class="s-label">Kopieren</div></div>
+    </div>
+    <button class="modal-close" onclick="closeShare()">Schließen</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const TIERS=[
+    {count:1,icon:'🎬',label:'2 Kinogutscheine'},
+    {count:2,icon:'🎧',label:'AirPods'},
+    {count:3,icon:'📱',label:'iPad'},
+    {count:5,icon:'✈️',label:'Wochenend-Trip'},
+    {count:8,icon:'🏆',label:'Jahresurlaub'},
+  ];
+  const DEMO_NAMES=[
+    {name:'Julia Hofmann',email:'j.hofmann@mail.de',initials:'JH'},
+    {name:'Klaus Mayer',email:'k.mayer@gmx.de',initials:'KM'},
+    {name:'Anna Schulz',email:'a.schulz@web.de',initials:'AS'},
+    {name:'Peter Brand',email:'p.brand@mail.de',initials:'PB'},
+    {name:'Maria Fuchs',email:'m.fuchs@gmail.com',initials:'MF'},
+  ];
+  const CHANNELS=['Empfehlungslink','QR-Code','WhatsApp','E-Mail'];
+  const REF_LINK='https://aventus.de/empfehlung/MK28491';
+
+  let state={
+    user:{name:'Michael Kleinhappel',initials:'MK',email:'michael.kleinhappel@digidor.de'},
+    activeCount:2,
+    refs:[
+      {name:'Sandra Berger',email:'s.berger@mail.de',initials:'SB',date:'12. Jan 2025',channel:'Empfehlungslink',status:'active'},
+      {name:'Thomas Winkler',email:'t.winkler@mail.de',initials:'TW',date:'3. März 2025',channel:'QR-Code',status:'active'},
+    ],
+    demoIdx:0,
+    toastTimer:null,
+  };
+
+  function init(){
+    // Load from sessionStorage if available
+    const stored=sessionStorage.getItem('aventus_user');
+    if(stored){
+      const u=JSON.parse(stored);
+      if(u.role==='admin'){window.location.href='admin.html';return;}
+      state.user.name=u.name;
+      const parts=u.name.split(' ');
+      state.user.initials=(parts[0][0]+(parts[1]?parts[1][0]:'')).toUpperCase();
+      if(u.refs!==undefined) state.activeCount=u.refs;
+    }
+    updateUserUI();
+    renderTiers();
+    renderRefs();
+    updateStats();
+  }
+
+  function updateUserUI(){
+    const first=state.user.name.split(' ')[0];
+    document.getElementById('nav-av').textContent=state.user.initials;
+    document.getElementById('nav-name').textContent=state.user.name;
+    document.getElementById('hero-name').textContent=first+'.';
+    if(state.activeCount===0){
+      document.getElementById('hero-sub').innerHTML='Noch keine Empfehlungen — teile deinen Link und verdiene deine erste Prämie!';
+    }
+  }
+
+  function getNext(n){return TIERS.find(t=>n<t.count);}
+  function getAchieved(n){return TIERS.filter(t=>n>=t.count);}
+
+  function updateStats(){
+    const achieved=getAchieved(state.activeCount);
+    const next=getNext(state.activeCount);
+    document.getElementById('v-total').textContent=state.activeCount;
+    document.getElementById('v-rewards').textContent=achieved.length;
+    document.getElementById('v-rewards-hint').textContent=achieved.length===0?'Noch keine Prämie':achieved.map(t=>t.icon).join(' ');
+
+    if(next){
+      const prevIdx=TIERS.indexOf(next)-1;
+      const from=prevIdx>=0?TIERS[prevIdx].count:0;
+      const pct=Math.round(((state.activeCount-from)/(next.count-from))*100);
+      const rem=next.count-state.activeCount;
+      document.getElementById('v-next').textContent=rem;
+      document.getElementById('v-next-hint').textContent='Empfehlung'+(rem>1?'en':'')+' fehlen noch';
+      document.getElementById('prog-title').innerHTML='Noch '+rem+' Empfehlung'+(rem>1?'en':'')+' bis zum <em>'+next.label+'</em> '+next.icon;
+      document.getElementById('prog-badge').textContent=state.activeCount+' / '+next.count+' Empfehlungen';
+      document.getElementById('prog-fill').style.width=Math.min(pct,100)+'%';
+      document.getElementById('prog-left').textContent=state.activeCount+' von '+next.count+' erreicht';
+      document.getElementById('prog-right').textContent=next.label+' bei '+next.count+' Empfehlungen';
+    } else {
+      document.getElementById('v-next').textContent='–';
+      document.getElementById('v-next-hint').textContent='Alle Prämien erreicht!';
+      document.getElementById('prog-title').innerHTML='<em>Alle Prämien freigeschaltet!</em> 🎉';
+      document.getElementById('prog-badge').textContent='Maximum erreicht';
+      document.getElementById('prog-fill').style.width='100%';
+      document.getElementById('prog-left').textContent='Alle Stufen abgeschlossen';
+      document.getElementById('prog-right').textContent='';
+    }
+  }
+
+  function renderTiers(){
+    const next=getNext(state.activeCount);
+    document.getElementById('tiers-grid').innerHTML=TIERS.map(t=>{
+      const done=state.activeCount>=t.count;
+      const isNext=next&&t.count===next.count;
+      return`<div class="tier ${done?'done':''} ${isNext?'next-up':''}">
+        <div class="tier-num">${t.count} Empfehlung${t.count>1?'en':''}</div>
+        ${done?`<div class="tier-check"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#030039" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`:''}
+        <div class="tier-icon">${t.icon}</div>
+        <div class="tier-name">${t.label}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderRefs(){
+    const body=document.getElementById('ref-body');
+    if(state.refs.length===0){
+      body.innerHTML='<div class="ref-empty">Noch keine Empfehlungen — teile deinen Link und starte!</div>';
+      return;
+    }
+    body.innerHTML=[...state.refs].reverse().map(r=>`
+      <div class="ref-row" style="animation:fadeUp 0.4s ease both">
+        <div class="ref-person">
+          <div class="ref-init">${r.initials}</div>
+          <div><div class="ref-fullname">${r.name}</div><div class="ref-email-text">${r.email}</div></div>
+        </div>
+        <div class="ref-date">${r.date}</div>
+        <div class="ref-source">${r.channel}</div>
+        <div><span class="badge ${r.status==='active'?'badge-teal':'badge-amber'}">
+          <span class="badge-dot"></span>${r.status==='active'?'Aktiv':'Ausstehend'}
+        </span></div>
+      </div>`).join('');
+  }
+
+  function addDemoRef(){
+    if(state.demoIdx>=DEMO_NAMES.length){showToast('Keine weiteren Demo-Einträge verfügbar.');return;}
+    const p=DEMO_NAMES[state.demoIdx++];
+    const ch=CHANNELS[Math.floor(Math.random()*CHANNELS.length)];
+    const date=new Date().toLocaleDateString('de-DE',{day:'numeric',month:'short',year:'numeric'});
+    const prevA=getAchieved(state.activeCount).length;
+    state.activeCount++;
+    state.refs.push({...p,date,channel:ch,status:'active'});
+    const newA=getAchieved(state.activeCount).length;
+    if(newA>prevA){
+      const earned=TIERS[newA-1];
+      showToast('🎉 Prämie freigeschaltet: '+earned.icon+' '+earned.label+'!');
+    } else {
+      showToast('Neue Empfehlung von '+p.name+' hinzugefügt.');
+    }
+    updateStats(); renderTiers(); renderRefs();
+  }
+
+  function copyLink(){
+    navigator.clipboard.writeText(REF_LINK).catch(()=>{});
+    showToast('✓ Link kopiert!');
+    closeShare();
+  }
+
+  function openShare(){document.getElementById('share-modal').classList.add('open');}
+  function closeShare(){document.getElementById('share-modal').classList.remove('open');}
+  function closeShareOutside(e){if(e.target===document.getElementById('share-modal'))closeShare();}
+
+  function shareVia(platform){
+    const msg='Hallo! Ich empfehle dir Aventus – hier ist mein persönlicher Link: '+REF_LINK;
+    const urls={
+      whatsapp:'https://wa.me/?text='+encodeURIComponent(msg),
+      email:'mailto:?subject=Meine Aventus Empfehlung&body='+encodeURIComponent(msg),
+      linkedin:'https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(REF_LINK),
+    };
+    if(urls[platform])window.open(urls[platform],'_blank');
+    closeShare();
+  }
+
+  function logout(){sessionStorage.clear();window.location.href='login.html';}
+
+  function showToast(msg){
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(state.toastTimer);
+    state.toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+  }
+
+  init();
+</script>
+</body>
+</html>
